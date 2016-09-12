@@ -153,7 +153,11 @@ public class StatsManagerBundleActivator
     {
         StatsTransport t = null;
 
-        if (STAT_TRANSPORT_CALLSTATS_IO.equalsIgnoreCase(transport))
+        if ("print".equalsIgnoreCase(transport))
+        {
+            t = new PrintStatsTransport();
+        }
+        else if (STAT_TRANSPORT_CALLSTATS_IO.equalsIgnoreCase(transport))
         {
             t = new CallStatsIOTransport();
         }
