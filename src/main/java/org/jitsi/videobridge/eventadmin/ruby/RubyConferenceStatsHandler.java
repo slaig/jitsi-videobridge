@@ -1,10 +1,6 @@
 package org.jitsi.videobridge.eventadmin.ruby;
 
-import io.callstats.sdk.CallStats;
-import io.callstats.sdk.CallStatsConferenceEvents;
-import io.callstats.sdk.CallStatsErrors;
-import io.callstats.sdk.data.*;
-import io.callstats.sdk.listeners.CallStatsStartConferenceListener;
+import io.callstats.sdk.data.UserInfo;
 import org.jitsi.eventadmin.Event;
 import org.jitsi.eventadmin.EventHandler;
 import org.jitsi.service.neomedia.MediaStream;
@@ -22,7 +18,6 @@ import org.jitsi.videobridge.EventFactory;
 import org.jitsi.videobridge.RtpChannel;
 import org.jitsi.videobridge.stats.Statistics;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -140,7 +135,7 @@ class RubyConferenceStatsHandler
         // Create a new PeriodicProcessible and start it.
         ConferencePeriodicProcessible cpp
             = new ConferencePeriodicProcessible(conference, interval);
-        cpp.start();
+//        cpp.start();
 
         // register for periodic execution.
         this.statisticsProcessors.put(conference, cpp);
@@ -167,7 +162,7 @@ class RubyConferenceStatsHandler
         if (cpp == null)
             return;
 
-        cpp.stop();
+//        cpp.stop();
         statisticsExecutor.deRegisterRecurringProcessible(cpp);
     }
 
@@ -204,7 +199,9 @@ class RubyConferenceStatsHandler
                 long period)
         {
             super(conference, period);
+
             this.conferenceID = conference.getName();
+            this.userInfo = new UserInfo(conferenceID, bridgeId, "ruby");
         }
 
         /**
@@ -215,66 +212,23 @@ class RubyConferenceStatsHandler
         @Override
         protected void doProcess()
         {
-            // if userInfo is missing the method conferenceSetupResponse
-            // is not called, means callstats still has not setup internally
-            // this conference, and no stats will be processed for it
-            if(userInfo == null)
-                return;
-
             for (Endpoint e : o.getEndpoints())
             {
                 for (MediaType mediaType : MEDIA_TYPES)
                 {
                     for (RtpChannel rc : e.getChannels(mediaType))
-                        processChannelStats(rc);
+                        processChannelStats(mediaType, rc);
                 }
             }
         }
 
-        /**
-         * Called when conference is created. Sends a setup event to callstats
-         * and creates the userInfo object that identifies the statistics for
-         * this conference.
-         */
-        void start()
-        {
-            ConferenceInfo conferenceInfo
-                = new ConferenceInfo(this.conferenceID, bridgeId);
-
-            // Send setup event to callstats and on successful response create
-            // the userInfo object.
-            rubyStats.sendCallStatsConferenceEvent(
-                    CallStatsConferenceEvents.CONFERENCE_SETUP,
-                    conferenceInfo,
-                    new CSStartConferenceListener(new WeakReference<>(this)));
-        }
-
-        /**
-         * The conference has expired, send terminate event to callstats.
-         */
-        void stop()
-        {
-            rubyStats.sendCallStatsConferenceEvent(
-                    CallStatsConferenceEvents.CONFERENCE_TERMINATED,
-                    userInfo);
-        }
-
-        /**
-         * Callstats has finished setting up the conference and we can start
-         * sending stats.
-         * @param ucid the id used to identify the conference inside callstats.
-         */
-        void conferenceSetupResponse(String ucid)
-        {
-            userInfo
-                = new UserInfo(conferenceID, bridgeId, ucid);
-        }
 
         /**
          * Process channel statistics.
+         * @param mediaType
          * @param channel the channel to process
          */
-        private void processChannelStats(RtpChannel channel)
+        private void processChannelStats(MediaType mediaType, RtpChannel channel)
         {
             if (channel == null)
             {
@@ -298,94 +252,59 @@ class RubyConferenceStatsHandler
             Endpoint endpoint = channel.getEndpoint();
             String endpointID = (endpoint == null) ? "" : endpoint.getID();
 
-            rubyStats.startStatsReportingForUser(
-                    endpointID,
-                    this.conferenceID);
+//            rubyStats.startStatsReportingForUser(
+//                    endpointID,
+//                    this.conferenceID);
 
             // Send stats for received streams.
             for (ReceiveTrackStats receiveStat : stats.getAllReceiveStats())
             {
-                ConferenceStats conferenceStats
-                    = new ConferenceStatsBuilder()
-                        .bytesSent(receiveStat.getBytes())
-                        .packetsSent(receiveStat.getPackets())
-                        .ssrc(String.valueOf(receiveStat.getSSRC()))
-                        .confID(this.conferenceID)
-                        .localUserID(bridgeId)
-                        .remoteUserID(endpointID)
-                        .statsType(CallStatsStreamType.INBOUND)
-                        // XXX Note that we take these two from the global stats
-                        .jitter(stats.getReceiveStats().getJitter())
-                        .rtt((int) stats.getReceiveStats().getRtt())
-                        .ucID(userInfo.getUcID())
-                        .build();
-                rubyStats.reportConferenceStats(endpointID, conferenceStats);
+//                ConferenceStats conferenceStats
+//                    = new ConferenceStatsBuilder()
+//                        .bytesSent(receiveStat.getBytes())
+//                        .packetsSent(receiveStat.getPackets())
+//                        .ssrc(String.valueOf(receiveStat.getSSRC()))
+//                        .confID(this.conferenceID)
+//                        .localUserID(bridgeId)
+//                        .remoteUserID(endpointID)
+//                        .statsType(CallStatsStreamType.INBOUND)
+//                        // XXX Note that we take these two from the global stats
+//                        .jitter(stats.getReceiveStats().getJitter())
+//                        .rtt((int) stats.getReceiveStats().getRtt())
+//                        .ucID(userInfo.getUcID())
+//                        .build();
+//                rubyStats.reportConferenceStats(endpointID, conferenceStats);
+
+
+                rubyStats.reportInbound(bridgeId, conferenceID, endpointID,
+                        mediaType, stats, receiveStat);
             }
 
             // Send stats for sent streams.
             for (SendTrackStats sendStat : stats.getAllSendStats())
             {
-                ConferenceStats conferenceStats
-                    = new ConferenceStatsBuilder()
-                        .bytesSent(sendStat.getBytes())
-                        .packetsSent(sendStat.getPackets())
-                        .ssrc(String.valueOf(sendStat.getSSRC()))
-                        .confID(this.conferenceID)
-                        .localUserID(bridgeId)
-                        .remoteUserID(endpointID)
-                        .statsType(CallStatsStreamType.OUTBOUND)
-                        // XXX Note that we take these two from the global stats
-                        .jitter(stats.getSendStats().getJitter())
-                        .rtt((int) stats.getSendStats().getRtt())
-                        .ucID(userInfo.getUcID())
-                        .build();
-                rubyStats.reportConferenceStats(endpointID, conferenceStats);
+//                ConferenceStats conferenceStats
+//                    = new ConferenceStatsBuilder()
+//                        .bytesSent(sendStat.getBytes())
+//                        .packetsSent(sendStat.getPackets())
+//                        .ssrc(String.valueOf(sendStat.getSSRC()))
+//                        .confID(this.conferenceID)
+//                        .localUserID(bridgeId)
+//                        .remoteUserID(endpointID)
+//                        .statsType(CallStatsStreamType.OUTBOUND)
+//                        // XXX Note that we take these two from the global stats
+//                        .jitter(stats.getSendStats().getJitter())
+//                        .rtt((int) stats.getSendStats().getRtt())
+//                        .ucID(userInfo.getUcID())
+//                        .build();
+//                rubyStats.reportConferenceStats(endpointID, conferenceStats);
+
+                rubyStats.reportOutbound(bridgeId, conferenceID, endpointID,
+                        mediaType, stats, sendStat);
             }
 
-            rubyStats.stopStatsReportingForUser(endpointID, this.conferenceID);
+//            rubyStats.stopStatsReportingForUser(endpointID, this.conferenceID);
         }
     }
 
-    /**
-     * Listener that get notified when conference had been processed
-     * by callstats and we have the identifier for it and we can start sending
-     * stats for it.
-     */
-    public static class CSStartConferenceListener
-        implements CallStatsStartConferenceListener
-    {
-        /**
-         * Weak reference for the ConferencePeriodicProcessible, to make sure
-         * if this listener got leaked somwehere in callstats we will not keep
-         * reference to conferences and such.
-         */
-        private final WeakReference<ConferencePeriodicProcessible> processible;
-
-        /**
-         * Creates listener.
-         * @param processible the processible interested in ucid value on
-         * successful setup of conference in callstats.
-         */
-        CSStartConferenceListener(
-            WeakReference<ConferencePeriodicProcessible> processible)
-        {
-            this.processible = processible;
-        }
-
-        @Override
-        public void onResponse(String ucid)
-        {
-            ConferencePeriodicProcessible p = processible.get();
-
-            // maybe null cause it was garbage collected
-            if(p != null)
-                p.conferenceSetupResponse(ucid);
-        }
-
-        @Override
-        public void onError(CallStatsErrors callStatsErrors, String s)
-        {
-            logger.error(s + "," + callStatsErrors);
-        }
-    }
 }
