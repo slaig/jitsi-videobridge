@@ -1,6 +1,9 @@
 package org.jitsi.videobridge.eventadmin.ruby;
 
 import org.influxdb.dto.Point;
+import org.jitsi.eventadmin.Event;
+import org.jitsi.influxdb.AbstractLoggingHandler;
+import org.jitsi.service.configuration.ConfigurationService;
 import org.jitsi.service.neomedia.MediaType;
 import org.jitsi.service.neomedia.stats.MediaStreamStats2;
 import org.jitsi.service.neomedia.stats.ReceiveTrackStats;
@@ -9,7 +12,11 @@ import org.jitsi.service.neomedia.stats.SendTrackStats;
 /**
  * Store statistics to influx
  */
-public class RubyStats {
+public class RubyStats extends AbstractLoggingHandler {
+
+    public RubyStats(ConfigurationService cfg) throws Exception {
+        super(cfg);
+    }
 
     public void reportOutbound(String bridgeId, String conferenceID, String endpointID, MediaType mediaType,
                                MediaStreamStats2 stats, SendTrackStats sendStat) {
@@ -28,17 +35,13 @@ public class RubyStats {
 
         ptBuilder.field("bytesSent", sendStat.getBytes());
         ptBuilder.field("packetsSent", sendStat.getPackets());
+        ptBuilder.field("packetRateSent", sendStat.getPacketRate());
         ptBuilder.field("lossRateSent", sendStat.getLossRate());
         ptBuilder.field("bitrateSent", sendStat.getBitrate());
 
         Point point = ptBuilder.build();
 
-        System.out.println(">>>>>>> " + point);
-//        if (logger.isDebugEnabled()) {
-//            logger.debug("Store stats to influx: " + point);
-//        }
-
-//        this.influxHandler.writePoint(point);
+        writePoint(point);
     }
 
     public void reportInbound(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, ReceiveTrackStats receiveStat) {
@@ -56,12 +59,17 @@ public class RubyStats {
 
         ptBuilder.field("bytesReceive", receiveStat.getBytes());
         ptBuilder.field("packetsReceive", receiveStat.getPackets());
+        ptBuilder.field("packetRateReceive", receiveStat.getPacketRate());
         ptBuilder.field("bitrateReceive", receiveStat.getBitrate());
         ptBuilder.field("packetLostReceive", receiveStat.getPacketsLost());
 
         Point point = ptBuilder.build();
 
-        System.out.println(">>>>>>> " + point);
+        writePoint(point);
+    }
 
+    @Override
+    public void handleEvent(Event event) {
+        // skip
     }
 }
