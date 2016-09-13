@@ -76,7 +76,8 @@ public class JvbBundleConfig
         },
         {
             "org/jitsi/videobridge/eventadmin/influxdb/Activator",
-            "org/jitsi/videobridge/eventadmin/callstats/Activator"
+            "org/jitsi/videobridge/eventadmin/callstats/Activator",
+            "org/jitsi/videobridge/eventadmin/ruby/Activator"
         },
         {
             "org/jitsi/videobridge/eventadmin/metrics/MetricLoggingActivator"
