@@ -153,9 +153,14 @@ public class StatsManagerBundleActivator
     {
         StatsTransport t = null;
 
-        if ("print".equalsIgnoreCase(transport))
+        if ("influx".equalsIgnoreCase(transport))
         {
-            t = new PrintStatsTransport();
+            try {
+                t = new InfluxStatsTransport(cfg);
+            } catch (Exception e) {
+                logger.error(
+                        "Error while create influx stats transport", e);
+            }
         }
         else if (STAT_TRANSPORT_CALLSTATS_IO.equalsIgnoreCase(transport))
         {
