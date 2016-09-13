@@ -5,6 +5,7 @@ import org.influxdb.dto.Point;
 import org.jitsi.eventadmin.Event;
 import org.jitsi.influxdb.AbstractLoggingHandler;
 import org.jitsi.service.configuration.ConfigurationService;
+import org.jitsi.util.ConfigUtils;
 
 import java.util.Map;
 
@@ -20,16 +21,24 @@ public class InfluxStatsTransport
     private static final Logger logger
             = Logger.getLogger(InfluxStatsTransport.class);
 
+    private final String bridgeId;
     private final AbstractLoggingHandler influxHandler;
 
     public InfluxStatsTransport(ConfigurationService cfg) throws Exception {
+
+        this.bridgeId = ConfigUtils.getString(
+                cfg,
+                "org.jitsi.videobridge.STATISTICS_BRIDGE_ID",
+                "unknown");
+
+
         this.influxHandler = new AbstractLoggingHandler(cfg) {
             @Override
             public void handleEvent(Event event) {
                 //skip
             }
         };
-     }
+    }
 
     /**
      * {@inheritDoc}
@@ -52,6 +61,8 @@ public class InfluxStatsTransport
             long measurementInterval)
     {
         Point.Builder ptBuilder = Point.measurement("videobridge_stats");
+        ptBuilder.tag("bridgeId", this.bridgeId);
+
         for (Map.Entry<String, Object> entry : statistics.getStats().entrySet()) {
             Object value = entry.getValue();
             if (value instanceof Number) {
@@ -60,7 +71,7 @@ public class InfluxStatsTransport
         }
 
         Point point = ptBuilder.build();
-        System.out.println(">>>> " + point);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Store stats to influx: " + point);
         }
