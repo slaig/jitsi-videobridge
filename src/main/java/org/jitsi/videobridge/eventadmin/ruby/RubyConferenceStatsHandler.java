@@ -252,30 +252,10 @@ class RubyConferenceStatsHandler
             Endpoint endpoint = channel.getEndpoint();
             String endpointID = (endpoint == null) ? "" : endpoint.getID();
 
-//            rubyStats.startStatsReportingForUser(
-//                    endpointID,
-//                    this.conferenceID);
 
             // Send stats for received streams.
             for (ReceiveTrackStats receiveStat : stats.getAllReceiveStats())
             {
-//                ConferenceStats conferenceStats
-//                    = new ConferenceStatsBuilder()
-//                        .bytesSent(receiveStat.getBytes())
-//                        .packetsSent(receiveStat.getPackets())
-//                        .ssrc(String.valueOf(receiveStat.getSSRC()))
-//                        .confID(this.conferenceID)
-//                        .localUserID(bridgeId)
-//                        .remoteUserID(endpointID)
-//                        .statsType(CallStatsStreamType.INBOUND)
-//                        // XXX Note that we take these two from the global stats
-//                        .jitter(stats.getReceiveStats().getJitter())
-//                        .rtt((int) stats.getReceiveStats().getRtt())
-//                        .ucID(userInfo.getUcID())
-//                        .build();
-//                rubyStats.reportConferenceStats(endpointID, conferenceStats);
-
-
                 rubyStats.reportInbound(bridgeId, conferenceID, endpointID,
                         mediaType, stats, receiveStat);
             }
@@ -283,27 +263,9 @@ class RubyConferenceStatsHandler
             // Send stats for sent streams.
             for (SendTrackStats sendStat : stats.getAllSendStats())
             {
-//                ConferenceStats conferenceStats
-//                    = new ConferenceStatsBuilder()
-//                        .bytesSent(sendStat.getBytes())
-//                        .packetsSent(sendStat.getPackets())
-//                        .ssrc(String.valueOf(sendStat.getSSRC()))
-//                        .confID(this.conferenceID)
-//                        .localUserID(bridgeId)
-//                        .remoteUserID(endpointID)
-//                        .statsType(CallStatsStreamType.OUTBOUND)
-//                        // XXX Note that we take these two from the global stats
-//                        .jitter(stats.getSendStats().getJitter())
-//                        .rtt((int) stats.getSendStats().getRtt())
-//                        .ucID(userInfo.getUcID())
-//                        .build();
-//                rubyStats.reportConferenceStats(endpointID, conferenceStats);
-
                 rubyStats.reportOutbound(bridgeId, conferenceID, endpointID,
                         mediaType, stats, sendStat);
             }
-
-//            rubyStats.stopStatsReportingForUser(endpointID, this.conferenceID);
         }
     }
 

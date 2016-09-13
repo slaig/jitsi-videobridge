@@ -55,7 +55,7 @@ public class Activator
                 "org.jitsi.videobridge.STATISTICS_RUBY_INTERVAL",
                 5000);
 
-        handler = new RubyConferenceStatsHandler(new RubyStats(), bridgeId, interval);
+        handler = new RubyConferenceStatsHandler(new RubyStats(cfg), bridgeId, interval);
 
         serviceRegistration = EventUtil.registerEventHandler(
                 bundleContext,
