@@ -33,8 +33,8 @@ public class RubyStats extends AbstractLoggingHandler {
         ptBuilder.field("jitter", stats.getSendStats().getJitter());
         ptBuilder.field("rtt", stats.getSendStats().getRtt());
 
-        ptBuilder.field("bytesSent", sendStat.getBytes());
-        ptBuilder.field("packetsSent", sendStat.getPackets());
+        ptBuilder.field("bytesSent", sendStat.getCurrentBytes());
+        ptBuilder.field("packetsSent", sendStat.getCurrentPackets());
         ptBuilder.field("packetRateSent", sendStat.getPacketRate());
         ptBuilder.field("lossRateSent", sendStat.getLossRate());
         ptBuilder.field("bitrateSent", sendStat.getBitrate());
@@ -57,11 +57,11 @@ public class RubyStats extends AbstractLoggingHandler {
         ptBuilder.field("jitter", stats.getReceiveStats().getJitter());
         ptBuilder.field("rtt", stats.getReceiveStats().getRtt());
 
-        ptBuilder.field("bytesReceive", receiveStat.getBytes());
-        ptBuilder.field("packetsReceive", receiveStat.getPackets());
+        ptBuilder.field("bytesReceive", receiveStat.getCurrentBytes());
+        ptBuilder.field("packetsReceive", receiveStat.getCurrentPackets());
         ptBuilder.field("packetRateReceive", receiveStat.getPacketRate());
         ptBuilder.field("bitrateReceive", receiveStat.getBitrate());
-        ptBuilder.field("packetLostReceive", receiveStat.getPacketsLost());
+        ptBuilder.field("packetLostReceive", receiveStat.getCurrentPacketsLost());
 
         Point point = ptBuilder.build();
 
