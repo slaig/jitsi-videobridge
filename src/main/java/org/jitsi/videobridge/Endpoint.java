@@ -644,9 +644,7 @@ public class Endpoint
 //        logger.info(">>>>>>>>>>>>>> pinned: " + newPinnedEndpointIDs);
 //        pinnedEndpointsChanged(newPinnedEndpointIDs);
 
-        System.out.println(">>>> set " + jsonObject + " !" );
         Integer lastN = new Integer(jsonObject.get("lastN").toString());
-        System.out.println(">>>> set " + lastN + " !" );
 
         if (logger.isDebugEnabled())
         {
@@ -660,7 +658,6 @@ public class Endpoint
 
         List<RtpChannel> channels = getChannels(MediaType.VIDEO);
         for (RtpChannel channel : channels) {
-            System.out.println(">>>> set " + lastN + " for " + channel);
             channel.setLastN(lastN);
         }
     }
