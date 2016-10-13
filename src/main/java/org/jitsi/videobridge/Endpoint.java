@@ -94,8 +94,8 @@ public class Endpoint
      * The {@link Videobridge#COLIBRI_CLASS} value indicating a
      * {@code GridPinnedEndpointChangedEvent}.
      */
-    private static final String COLIBRI_CLASS_GRID_PINNED_ENDPOINT_CHANGED
-        = "GridPinnedEndpointChangedEvent";
+    private static final String COLIBRI_CLASS_LASTN_ENDPOINT_CHANGED
+        = "LastNEndpointChangedEvent";
 
     /**
      * The {@link Videobridge#COLIBRI_CLASS} value indicating a
@@ -496,8 +496,8 @@ public class Endpoint
             onSelectedEndpointChangedEvent(src, jsonObject);
         else if (COLIBRI_CLASS_PINNED_ENDPOINT_CHANGED.equals(colibriClass))
             onPinnedEndpointChangedEvent(src, jsonObject);
-        else if (COLIBRI_CLASS_GRID_PINNED_ENDPOINT_CHANGED.equals(colibriClass))
-            onGridPinnedEndpointChangedEvent(src, jsonObject);
+        else if (COLIBRI_CLASS_LASTN_ENDPOINT_CHANGED.equals(colibriClass))
+            onLastNEndpointChangedEvent(src, jsonObject);
         else if (COLIBRI_CLASS_PINNED_ENDPOINTS_CHANGED.equals(colibriClass))
             onPinnedEndpointsChangedEvent(src, jsonObject);
         else if (COLIBRI_CLASS_CLIENT_HELLO.equals(colibriClass))
@@ -621,7 +621,7 @@ public class Endpoint
     }
 
     /**
-     * Notifies this {@code Endpoint} that a {@code GridPinnedEndpointChangedEvent}
+     * Notifies this {@code Endpoint} that a {@code LastNEndpointChangedEvent}
      * has been received by the associated {@code SctpConnection}.
      *
      * @param src the {@code WebRtcDataStream} by which {@code jsonObject} has
@@ -630,26 +630,35 @@ public class Endpoint
      * {@code PinnedEndpointChangedEvent} which has been received by the
      * associated {@code SctpConnection}
      */
-    private void onGridPinnedEndpointChangedEvent(
+    private void onLastNEndpointChangedEvent(
             WebRtcDataStream src,
             JSONObject jsonObject)
     {
-        // врубаем симулкаст
-        onSelectedEndpointChangedEvent(src, jsonObject);
+//        // врубаем симулкаст
+//        onSelectedEndpointChangedEvent(src, jsonObject);
+//
+//        // пиним их.
+//        List<String> newPinnedEndpointIDs = readSelectedEndpointID(jsonObject);
+//        logger.info(">>>>>>>>>>>>>> simulcast: " + newPinnedEndpointIDs);
+//        newPinnedEndpointIDs.remove(getID());
+//        logger.info(">>>>>>>>>>>>>> pinned: " + newPinnedEndpointIDs);
+//        pinnedEndpointsChanged(newPinnedEndpointIDs);
 
-        // пиним их.
-        List<String> newPinnedEndpointIDs = readSelectedEndpointID(jsonObject);
-        logger.info(">>>>>>>>>>>>>> simulcast: " + newPinnedEndpointIDs);
-        newPinnedEndpointIDs.remove(getID());
-        logger.info(">>>>>>>>>>>>>> pinned: " + newPinnedEndpointIDs);
-        pinnedEndpointsChanged(newPinnedEndpointIDs);
+        Integer lastN = new Integer(jsonObject.get("lastN").toString());
 
+        if (logger.isDebugEnabled())
+        {
+            StringCompiler sc = new StringCompiler();
+            sc.bind("lastN", lastN);
+            sc.bind("this", this);
+            logger.debug(sc.c(
+                    "Endpoint {this.id} notified us that it want last n"
+                            + " {lastN}."));
+        }
 
-        // устанавливаем LastN
-        int lastN = newPinnedEndpointIDs.isEmpty() ? -1 : newPinnedEndpointIDs.size();
-        logger.info(">>>>>>>>>>>>>> lastN: " + lastN);
         List<RtpChannel> channels = getChannels(MediaType.VIDEO);
         for (RtpChannel channel : channels) {
+            System.out.println(">>>> set " + lastN + " for " + channel);
             channel.setLastN(lastN);
         }
     }
