@@ -9,9 +9,8 @@ import org.jitsi.service.neomedia.stats.MediaStreamStats2;
 import org.jitsi.service.neomedia.stats.ReceiveTrackStats;
 import org.jitsi.service.neomedia.stats.SendTrackStats;
 import org.jitsi.util.Logger;
-import org.jitsi.util.concurrent.PeriodicProcessibleWithObject;
-import org.jitsi.util.concurrent.RecurringProcessible;
-import org.jitsi.util.concurrent.RecurringProcessibleExecutor;
+import org.jitsi.util.concurrent.PeriodicRunnableWithObject;
+import org.jitsi.util.concurrent.RecurringRunnableExecutor;
 import org.jitsi.videobridge.Conference;
 import org.jitsi.videobridge.Endpoint;
 import org.jitsi.videobridge.EventFactory;
@@ -42,11 +41,11 @@ class RubyConferenceStatsHandler
         = { MediaType.AUDIO, MediaType.VIDEO };
 
     /**
-     * The {@link RecurringProcessibleExecutor} which periodically invokes
+     * The {@link RecurringRunnableExecutor} which periodically invokes
      * generating and pushing statistics per conference for every Channel.
      */
-    private static final RecurringProcessibleExecutor statisticsExecutor
-        = new RecurringProcessibleExecutor(
+    private static final RecurringRunnableExecutor statisticsExecutor
+        = new RecurringRunnableExecutor(
         RubyConferenceStatsHandler.class.getSimpleName()
             + "-statisticsExecutor");
 
@@ -87,7 +86,7 @@ class RubyConferenceStatsHandler
         // Let's stop all left processibles.
         for (ConferencePeriodicProcessible cpp : statisticsProcessors.values())
         {
-            statisticsExecutor.deRegisterRecurringProcessible(cpp);
+            statisticsExecutor.deRegisterRecurringRunnable(cpp);
         }
     }
 
@@ -139,7 +138,7 @@ class RubyConferenceStatsHandler
 
         // register for periodic execution.
         this.statisticsProcessors.put(conference, cpp);
-        this.statisticsExecutor.registerRecurringProcessible(cpp);
+        this.statisticsExecutor.registerRecurringRunnable(cpp);
     }
 
     /**
@@ -163,15 +162,15 @@ class RubyConferenceStatsHandler
             return;
 
 //        cpp.stop();
-        statisticsExecutor.deRegisterRecurringProcessible(cpp);
+        statisticsExecutor.deRegisterRecurringRunnable(cpp);
     }
 
     /**
-     * Implements a {@link RecurringProcessible} which periodically generates a
+     * Implements a {@link org.jitsi.util.concurrent.RecurringRunnable} which periodically generates a
      * statistics for the conference channels.
      */
     private class ConferencePeriodicProcessible
-        extends PeriodicProcessibleWithObject<Conference>
+        extends PeriodicRunnableWithObject<Conference>
     {
         /**
          * The user info object used to identify the reports to callstats. Holds
@@ -210,7 +209,7 @@ class RubyConferenceStatsHandler
          * Invokes {@link Statistics#generate()} on {@link #o}.
          */
         @Override
-        protected void doProcess()
+        protected void doRun()
         {
             for (Endpoint e : o.getEndpoints())
             {
