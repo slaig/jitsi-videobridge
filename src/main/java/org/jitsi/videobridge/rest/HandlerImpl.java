@@ -374,6 +374,7 @@ class HandlerImpl
                 ColibriConferenceIQ conferenceIQ = new ColibriConferenceIQ();
 
                 conferenceIQ.setID(conference.getID());
+                conferenceIQ.setName(conference.getName());
                 conferenceIQs.add(conferenceIQ);
             }
 
