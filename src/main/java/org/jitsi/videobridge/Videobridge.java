@@ -900,7 +900,13 @@ public class Videobridge
                 Boolean initiator = channelIQ.isInitiator();
 
                 if (initiator != null)
+                {
                     channel.setInitiator(initiator);
+                }
+                else
+                {
+                    initiator = true;
+                }
 
                 channel.setPayloadTypes(channelIQ.getPayloadTypes());
                 channel.setRtpHeaderExtensions(
@@ -908,9 +914,8 @@ public class Videobridge
 
                 channel.setDirection(channelIQ.getDirection());
 
-                channel.setSources(channelIQ.getSources());
-
-                channel.setSourceGroups(channelIQ.getSourceGroups());
+                channel.setMediaStreamTracks(
+                    channelIQ.getSources(), channelIQ.getSourceGroups());
 
                 if (channel instanceof VideoChannel)
                 {
@@ -925,7 +930,10 @@ public class Videobridge
                 if (channelBundleId != null)
                 {
                     TransportManager transportManager
-                        = conference.getTransportManager(channelBundleId, true);
+                        = conference.getTransportManager(
+                            channelBundleId,
+                            true,
+                            initiator);
 
                     transportManager.addChannel(channel);
                 }
@@ -1059,7 +1067,13 @@ public class Videobridge
                 Boolean initiator = sctpConnIq.isInitiator();
 
                 if (initiator != null)
+                {
                     sctpConn.setInitiator(initiator);
+                }
+                else
+                {
+                    initiator = true;
+                }
 
                 // transport
                 sctpConn.setTransport(sctpConnIq.getTransport());
@@ -1069,7 +1083,8 @@ public class Videobridge
                     TransportManager transportManager
                         = conference.getTransportManager(
                                 channelBundleId,
-                                true);
+                                true,
+                                initiator);
 
                     transportManager.addChannel(sctpConn);
                 }
