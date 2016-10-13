@@ -440,7 +440,14 @@ final class JSONSerializer
         else
         {
             String id = conference.getID();
+            int count = 0;
             String name = conference.getName();
+            if (name != null) {
+                int i = name.indexOf('_');
+                count = Integer.parseInt(name.substring(0, i));
+                name = name.substring(i + 1);
+            }
+
             List<ColibriConferenceIQ.Content> contents
                 = conference.getContents();
             List<ColibriConferenceIQ.ChannelBundle> channelBundles
@@ -452,9 +459,11 @@ final class JSONSerializer
             // id
             if (id != null)
                 jsonObject.put(ColibriConferenceIQ.ID_ATTR_NAME, id);
-            // name
-            if (name != null)
+            // name and count
+            if (name != null) {
                 jsonObject.put(ColibriConferenceIQ.NAME_ATTR_NAME, name);
+                jsonObject.put("count", count);
+            }
             // contents
             if ((contents != null) && !contents.isEmpty())
                 jsonObject.put(CONTENTS, serializeContents(contents));

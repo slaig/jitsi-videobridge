@@ -644,7 +644,9 @@ public class Endpoint
 //        logger.info(">>>>>>>>>>>>>> pinned: " + newPinnedEndpointIDs);
 //        pinnedEndpointsChanged(newPinnedEndpointIDs);
 
+        System.out.println(">>>> set " + jsonObject + " !" );
         Integer lastN = new Integer(jsonObject.get("lastN").toString());
+        System.out.println(">>>> set " + lastN + " !" );
 
         if (logger.isDebugEnabled())
         {
