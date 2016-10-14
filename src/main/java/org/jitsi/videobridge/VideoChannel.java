@@ -686,6 +686,15 @@ public class VideoChannel
     }
 
     /**
+     * Slaig: потомучто setLastN не увеличивает его
+     */
+    public void setCurrentLastN(Integer lastN)
+    {
+        setLastN(lastN);
+        lastNController.setCurrentLastN(lastN);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

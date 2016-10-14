@@ -125,7 +125,7 @@ import org.osgi.framework.*;
  *       <td>GET</td>
  *       <td>/colibri/conferences/{id}</td>
  *       <td>
- *         200 OK with a JSON object which represents the conference with the 
+ *         200 OK with a JSON object which represents the conference with the
  *         specified <tt>id</tt>. For example:
  * <code>
  * {
@@ -374,7 +374,10 @@ class HandlerImpl
                 ColibriConferenceIQ conferenceIQ = new ColibriConferenceIQ();
 
                 conferenceIQ.setID(conference.getID());
-                conferenceIQ.setName(conference.getEndpointCount() + "_" + conference.getName());
+                conferenceIQ.setName(
+                        conference.getEndpointCount() + "_" +
+                        conference.getLastActivityTime() + "_" +
+                                conference.getName());
                 conferenceIQs.add(conferenceIQ);
             }
 

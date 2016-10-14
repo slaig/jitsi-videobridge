@@ -658,7 +658,7 @@ public class Endpoint
 
         List<RtpChannel> channels = getChannels(MediaType.VIDEO);
         for (RtpChannel channel : channels) {
-            channel.setLastN(lastN);
+            ((VideoChannel)channel).setCurrentLastN(lastN);
         }
     }
 
