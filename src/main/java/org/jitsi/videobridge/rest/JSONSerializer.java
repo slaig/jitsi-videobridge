@@ -445,7 +445,7 @@ final class JSONSerializer
             String name = conference.getName();
             if (name != null) {
                 int i = name.indexOf('_');
-                int i2 = name.indexOf('_', i);
+                int i2 = name.indexOf('_', i + 1);
                 count = Integer.parseInt(name.substring(0, i));
                 activityTime = Long.parseLong(name.substring(i + 1, i2));
                 name = name.substring(i2 + 1);
