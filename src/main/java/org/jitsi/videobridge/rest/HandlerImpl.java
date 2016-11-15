@@ -889,11 +889,17 @@ class HandlerImpl
                 if (GET_HTTP_METHOD.equals(requestMethod))
                 {
                     // Retrieve a representation of a Conference of Videobridge.
-                    doGetConferenceJSON(
-                            target,
-                            baseRequest,
-                            request,
-                            response);
+                    try {
+                        doGetConferenceJSON(
+                                target,
+                                baseRequest,
+                                request,
+                                response);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        response.setStatus(
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
                 }
                 else if (PATCH_HTTP_METHOD.equals(requestMethod))
                 {
