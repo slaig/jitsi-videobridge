@@ -604,6 +604,7 @@ class HandlerImpl
                         }
                         catch (Exception e)
                         {
+                            e.printStackTrace();
                             status
                                 = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
                         }
@@ -889,32 +890,20 @@ class HandlerImpl
                 if (GET_HTTP_METHOD.equals(requestMethod))
                 {
                     // Retrieve a representation of a Conference of Videobridge.
-                    try {
-                        doGetConferenceJSON(
-                                target,
-                                baseRequest,
-                                request,
-                                response);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        response.setStatus(
-                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    }
+                    doGetConferenceJSON(
+                            target,
+                            baseRequest,
+                            request,
+                            response);
                 }
                 else if (PATCH_HTTP_METHOD.equals(requestMethod))
                 {
                     // Modify a Conference of Videobridge.
-                    try {
                     doPatchConferenceJSON(
                             target,
                             baseRequest,
                             request,
                             response);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        response.setStatus(
-                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    }
                 }
                 else
                 {
