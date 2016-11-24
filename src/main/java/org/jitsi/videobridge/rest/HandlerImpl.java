@@ -904,11 +904,17 @@ class HandlerImpl
                 else if (PATCH_HTTP_METHOD.equals(requestMethod))
                 {
                     // Modify a Conference of Videobridge.
+                    try {
                     doPatchConferenceJSON(
                             target,
                             baseRequest,
                             request,
                             response);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        response.setStatus(
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
                 }
                 else
                 {
