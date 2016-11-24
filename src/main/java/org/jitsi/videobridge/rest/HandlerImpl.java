@@ -586,13 +586,11 @@ class HandlerImpl
 
                         try
                         {
-                            System.out.println(">>>>>>>");
                             IQ responseIQ
                                 = videobridge.handleColibriConferenceIQ(
                                         requestConferenceIQ,
                                         Videobridge.OPTION_ALLOW_NO_FOCUS);
 
-                            System.out.println(">>>>>>> " + responseIQ);
                             if (responseIQ instanceof ColibriConferenceIQ)
                             {
                                 responseConferenceIQ
@@ -600,6 +598,11 @@ class HandlerImpl
                             }
                             else
                             {
+                                System.out.println(">>>" + responseIQ.getError().getCondition());
+                                System.out.println(">>>" + responseIQ.getError().getMessage());
+                                System.out.println(">>>" + responseIQ.getError().getCode());
+                                System.out.println(">>>" + responseIQ.getError().getType());
+
                                 status
                                     = getHttpStatusCodeForResultIq(responseIQ);
                             }
