@@ -27,7 +27,7 @@ public class RubyStats extends AbstractLoggingHandler {
         String urlBase = cfg.getString("org.jitsi.videobridge.log.INFLUX_URL_BASE", (String)null);
         String user = cfg.getString("org.jitsi.videobridge.log.INFLUX_USER", (String)null);
         String pass = cfg.getString("org.jitsi.videobridge.log.INFLUX_PASS", (String)null);
-        this.db = cfg.getString("org.jitsi.videobridge.log.INFLUX_DATABASE", (String)null);
+        this.db = cfg.getString("org.jitsi.videobridge.log.INFLUX_DATABASE", (String) null);
 
         this.influxDB = InfluxDBFactory.connect(urlBase, user, pass);
         this.influxDB.createDatabase(this.db);
@@ -58,7 +58,8 @@ public class RubyStats extends AbstractLoggingHandler {
     private void report(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
         Point.Builder b = Point.measurement("bbb");
         b.field("aaa", 23);
-        writePoint(b.build());
+        this.influxDB.write(this.db, "default", b.build());
+//        writePoint(b.build());
         System.out.println("??????????????????? bb ");
 
        Point.Builder a = Point.measurement("aaa");
