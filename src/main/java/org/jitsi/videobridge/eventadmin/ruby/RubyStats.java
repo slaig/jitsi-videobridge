@@ -3,45 +3,38 @@ package org.jitsi.videobridge.eventadmin.ruby;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
-import org.jitsi.eventadmin.Event;
-import org.jitsi.influxdb.AbstractLoggingHandler;
 import org.jitsi.service.configuration.ConfigurationService;
 import org.jitsi.service.neomedia.MediaType;
 import org.jitsi.service.neomedia.stats.MediaStreamStats2;
 import org.jitsi.service.neomedia.stats.ReceiveTrackStats;
 import org.jitsi.service.neomedia.stats.SendTrackStats;
 import org.jitsi.service.neomedia.stats.TrackStats;
+import org.jitsi.util.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Store statistics to influx
  */
-public class RubyStats extends AbstractLoggingHandler {
+public class RubyStats {
+
+    private static final Logger logger
+            = Logger.getLogger(RubyStats.class);
 
     private final InfluxDB influxDB;
     private final String db;
 
     public RubyStats(ConfigurationService cfg) throws Exception {
-        super(cfg);
-        String urlBase = cfg.getString("org.jitsi.videobridge.log.INFLUX_URL_BASE", (String)null);
-        String user = cfg.getString("org.jitsi.videobridge.log.INFLUX_USER", (String)null);
-        String pass = cfg.getString("org.jitsi.videobridge.log.INFLUX_PASS", (String)null);
-        this.db = cfg.getString("org.jitsi.videobridge.log.INFLUX_DATABASE", (String) null);
+        String urlBase = cfg.getString("org.jitsi.videobridge.log.INFLUX_URL_BASE", null);
+        String user = cfg.getString("org.jitsi.videobridge.log.INFLUX_USER", null);
+        String pass = cfg.getString("org.jitsi.videobridge.log.INFLUX_PASS", null);
+        this.db = cfg.getString("org.jitsi.videobridge.log.INFLUX_DATABASE", null);
 
         this.influxDB = InfluxDBFactory.connect(urlBase, user, pass);
         this.influxDB.createDatabase(this.db);
         this.influxDB.enableBatch(2000, 100, TimeUnit.MILLISECONDS);
-        System.out.println(">>>>>> " + urlBase);
-        System.out.println(">>>>>> " + user);
-        System.out.println(">>>>>> " + pass);
-        System.out.println(">>>>>> " + this.db);
 
-        Point.Builder b = Point.measurement("bbb");
-        b.field("aaa", 23);
-        this.influxDB.write(this.db, "default", b.build());
-        writePoint(b.build());
-        System.out.println("??????????????????? bb ");
+        logger.info("Init ruby logger to " + urlBase + "/" + this.db);
 
     }
 
@@ -56,20 +49,7 @@ public class RubyStats extends AbstractLoggingHandler {
     }
 
     private void report(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
-        Point.Builder b = Point.measurement("bbb");
-        b.field("aaa", 23);
-        this.influxDB.write(this.db, "default", b.build());
-//        writePoint(b.build());
-        System.out.println("??????????????????? bb ");
-
-       Point.Builder a = Point.measurement("aaa");
-        a.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        a.field("aaa", 23L);
-        a.tag("label", "val");
-        writePoint(a.build());
-        System.out.println("??????????????????? aaa ");
-
-        Point.Builder ptBuilder = Point.measurement("videobridge_conference_stats2");
+        Point.Builder ptBuilder = Point.measurement("videobridge_conference_stats");
         ptBuilder.tag("bridgeId", bridgeId);
         ptBuilder.tag("conferenceId", conferenceID);
         ptBuilder.tag("endpointId", endpointID);
@@ -103,11 +83,7 @@ public class RubyStats extends AbstractLoggingHandler {
         }
 
         Point point = ptBuilder.build();
-        writePoint(point);
+        this.influxDB.write(this.db, "default", point);
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        // skip
-    }
-}
+ }
