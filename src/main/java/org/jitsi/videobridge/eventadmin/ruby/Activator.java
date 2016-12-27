@@ -61,6 +61,8 @@ public class Activator
                 bundleContext,
                 new String[] { "org/jitsi/*" },
                 handler);
+
+        System.out.println(">>>>>>> RUby stats activator started");
     }
 
     @Override

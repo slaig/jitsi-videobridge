@@ -97,6 +97,7 @@ class RubyConferenceStatsHandler
     @Override
     public void handleEvent(Event event)
     {
+        System.out.println(">>>>>>> " + event);
         if (event == null)
         {
             logger.debug("Could not handle an event because it was null.");
