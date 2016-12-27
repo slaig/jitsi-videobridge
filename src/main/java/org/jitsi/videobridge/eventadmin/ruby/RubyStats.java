@@ -43,8 +43,8 @@ public class RubyStats extends AbstractLoggingHandler {
         Point.Builder ptBuilder = Point.measurement("vb_conference_stats");
 //        ptBuilder.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         ptBuilder.tag("bridgeId", bridgeId);
-        ptBuilder.tag("conferenceId", conferenceID);
-        ptBuilder.tag("endpointId", endpointID);
+        ptBuilder.tag("conferenceId", String.valueOf(conferenceID.hashCode() % 100));
+        ptBuilder.tag("endpointId", String.valueOf(endpointID.hashCode() % 100));
         ptBuilder.tag("mediaType", mediaType.name());
 
         ptBuilder.tag("ssrc", String.valueOf(trackStats.getSSRC() % 100));
