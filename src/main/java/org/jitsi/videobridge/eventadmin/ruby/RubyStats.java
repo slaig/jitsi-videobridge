@@ -63,8 +63,12 @@ public class RubyStats extends AbstractLoggingHandler {
             ptBuilder.field("lossRateSent", ((SendTrackStats) trackStats).getLossRate());
         }
 
-        Point point = ptBuilder.build();
-        writePoint(point);
+        try {
+            Point point = ptBuilder.build();
+            writePoint(point);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
         System.out.println(">>>>>>>>>> write vvv");
         Point.Builder ptBuilder2 = Point.measurement("vvv");
