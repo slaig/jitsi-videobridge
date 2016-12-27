@@ -49,21 +49,14 @@ public class RubyStats {
     }
 
     private void report(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
-        Point.Builder ptBuilder = Point.measurement("ssss");
-        ptBuilder.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        ptBuilder.field("aaa", 12);
-        Point point = ptBuilder.build();
-        this.influxDB.write(this.db, "default", point);
-    }
-
-    private void report2(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
         Point.Builder ptBuilder = Point.measurement("videobridge_conference_stats");
+        ptBuilder.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         ptBuilder.tag("bridgeId", bridgeId);
         ptBuilder.tag("conferenceId", conferenceID);
         ptBuilder.tag("endpointId", endpointID);
         ptBuilder.tag("mediaType", mediaType.name());
 
-        ptBuilder.tag("ssrc", String.valueOf(trackStats.getSSRC()));
+        ptBuilder.tag("ssrc", String.valueOf(trackStats.getSSRC() % 100));
 
         ptBuilder.field("jitter", stats.getReceiveStats().getJitter());
         ptBuilder.field("rtt", stats.getReceiveStats().getRtt());
