@@ -1,5 +1,7 @@
 package org.jitsi.videobridge.eventadmin.ruby;
 
+import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
 import org.jitsi.eventadmin.Event;
 import org.jitsi.influxdb.AbstractLoggingHandler;
@@ -17,8 +19,30 @@ import java.util.concurrent.TimeUnit;
  */
 public class RubyStats extends AbstractLoggingHandler {
 
+    private final InfluxDB influxDB;
+    private final String db;
+
     public RubyStats(ConfigurationService cfg) throws Exception {
         super(cfg);
+        String urlBase = cfg.getString("org.jitsi.videobridge.log.INFLUX_URL_BASE", (String)null);
+        String user = cfg.getString("org.jitsi.videobridge.log.INFLUX_USER", (String)null);
+        String pass = cfg.getString("org.jitsi.videobridge.log.INFLUX_PASS", (String)null);
+        this.db = cfg.getString("org.jitsi.videobridge.log.INFLUX_DATABASE", (String)null);
+
+        this.influxDB = InfluxDBFactory.connect(urlBase, user, pass);
+        this.influxDB.createDatabase(this.db);
+        this.influxDB.enableBatch(2000, 100, TimeUnit.MILLISECONDS);
+        System.out.println(">>>>>> " + urlBase);
+        System.out.println(">>>>>> " + user);
+        System.out.println(">>>>>> " + pass);
+        System.out.println(">>>>>> " + this.db);
+
+        Point.Builder b = Point.measurement("bbb");
+        b.field("aaa", 23);
+        this.influxDB.write(this.db, "default", b.build());
+        writePoint(b.build());
+        System.out.println("??????????????????? bb ");
+
     }
 
     public void reportOutbound(String bridgeId, String conferenceID, String endpointID, MediaType mediaType,
@@ -33,8 +57,7 @@ public class RubyStats extends AbstractLoggingHandler {
 
     private void report(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
         Point.Builder b = Point.measurement("bbb");
-        b.field("aaa", 23L);
-        b.tag("label", "val");
+        b.field("aaa", 23);
         writePoint(b.build());
         System.out.println("??????????????????? bb ");
 
