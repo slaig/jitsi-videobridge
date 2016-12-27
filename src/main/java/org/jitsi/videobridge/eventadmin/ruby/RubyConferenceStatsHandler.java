@@ -123,7 +123,6 @@ class RubyConferenceStatsHandler
      */
     private void conferenceCreated(final Conference conference)
     {
-        System.out.println(">>>>>>> cre");
         if (conference == null)
         {
             logger.debug(
@@ -140,7 +139,6 @@ class RubyConferenceStatsHandler
         // register for periodic execution.
         this.statisticsProcessors.put(conference, cpp);
         this.statisticsExecutor.registerRecurringRunnable(cpp);
-        System.out.println(">>>>>>> reg");
     }
 
     /**
@@ -213,8 +211,6 @@ class RubyConferenceStatsHandler
         @Override
         protected void doRun()
         {
-            System.out.println(">>>>>>> sta");
-
             try {
                 for (Endpoint e : o.getEndpoints())
                 {
@@ -245,21 +241,17 @@ class RubyConferenceStatsHandler
                 return;
             }
 
-            System.out.println(">>>>>>> 1");
             if (channel.getReceiveSSRCs().length == 0)
                 return;
 
-            System.out.println(">>>>>>> 2");
             MediaStream stream = channel.getStream();
             if (stream == null)
                 return;
 
-            System.out.println(">>>>>>> 3");
             MediaStreamStats2 stats = stream.getMediaStreamStats();
             if (stats == null)
                 return;
 
-            System.out.println(">>>>>>> 4");
             Endpoint endpoint = channel.getEndpoint();
             String endpointID = (endpoint == null) ? "" : endpoint.getID();
 
@@ -267,7 +259,6 @@ class RubyConferenceStatsHandler
             // Send stats for received streams.
             for (ReceiveTrackStats receiveStat : stats.getAllReceiveStats())
             {
-                System.out.println(">>>>>>> in");
                 rubyStats.reportInbound(bridgeId, conferenceID, endpointID,
                         mediaType, stats, receiveStat);
             }
@@ -275,7 +266,6 @@ class RubyConferenceStatsHandler
             // Send stats for sent streams.
             for (SendTrackStats sendStat : stats.getAllSendStats())
             {
-                System.out.println(">>>>>>> out");
                 rubyStats.reportOutbound(bridgeId, conferenceID, endpointID,
                         mediaType, stats, sendStat);
             }

@@ -30,7 +30,7 @@ public class RubyStats extends AbstractLoggingHandler {
     }
 
     private void report(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
-        Point.Builder ptBuilder = Point.measurement("videobridge_conference_stats");
+        Point.Builder ptBuilder = Point.measurement("videobridge_conference_stats2");
         ptBuilder.tag("bridgeId", bridgeId);
         ptBuilder.tag("conferenceId", conferenceID);
         ptBuilder.tag("endpointId", endpointID);
@@ -64,7 +64,7 @@ public class RubyStats extends AbstractLoggingHandler {
         }
 
         Point point = ptBuilder.build();
-
+        System.out.println(">>>>>>>>>> write");
         writePoint(point);
     }
 
