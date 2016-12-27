@@ -64,8 +64,13 @@ public class RubyStats extends AbstractLoggingHandler {
         }
 
         Point point = ptBuilder.build();
-        System.out.println(">>>>>>>>>> write");
         writePoint(point);
+
+        System.out.println(">>>>>>>>>> write vvv");
+        Point.Builder ptBuilder2 = Point.measurement("vvv");
+        ptBuilder2.tag("aa", "bb");
+        ptBuilder2.field("m", 12);
+        writePoint(ptBuilder2.build());
     }
 
     @Override
