@@ -10,6 +10,8 @@ import org.jitsi.service.neomedia.stats.ReceiveTrackStats;
 import org.jitsi.service.neomedia.stats.SendTrackStats;
 import org.jitsi.service.neomedia.stats.TrackStats;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Store statistics to influx
  */
@@ -30,6 +32,19 @@ public class RubyStats extends AbstractLoggingHandler {
     }
 
     private void report(String bridgeId, String conferenceID, String endpointID, MediaType mediaType, MediaStreamStats2 stats, TrackStats trackStats) {
+        Point.Builder b = Point.measurement("bbb");
+        b.field("aaa", 23L);
+        b.tag("label", "val");
+        writePoint(b.build());
+        System.out.println("??????????????????? bb ");
+
+       Point.Builder a = Point.measurement("aaa");
+        a.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        a.field("aaa", 23L);
+        a.tag("label", "val");
+        writePoint(a.build());
+        System.out.println("??????????????????? aaa ");
+
         Point.Builder ptBuilder = Point.measurement("videobridge_conference_stats2");
         ptBuilder.tag("bridgeId", bridgeId);
         ptBuilder.tag("conferenceId", conferenceID);
