@@ -97,7 +97,6 @@ class RubyConferenceStatsHandler
     @Override
     public void handleEvent(Event event)
     {
-        System.out.println(">>>>>>> " + event);
         if (event == null)
         {
             logger.debug("Could not handle an event because it was null.");
@@ -124,6 +123,7 @@ class RubyConferenceStatsHandler
      */
     private void conferenceCreated(final Conference conference)
     {
+        System.out.println(">>>>>>> cre");
         if (conference == null)
         {
             logger.debug(
@@ -140,6 +140,7 @@ class RubyConferenceStatsHandler
         // register for periodic execution.
         this.statisticsProcessors.put(conference, cpp);
         this.statisticsExecutor.registerRecurringRunnable(cpp);
+        System.out.println(">>>>>>> reg");
     }
 
     /**
@@ -212,13 +213,19 @@ class RubyConferenceStatsHandler
         @Override
         protected void doRun()
         {
-            for (Endpoint e : o.getEndpoints())
-            {
-                for (MediaType mediaType : MEDIA_TYPES)
+            System.out.println(">>>>>>> sta");
+
+            try {
+                for (Endpoint e : o.getEndpoints())
                 {
-                    for (RtpChannel rc : e.getChannels(mediaType))
-                        processChannelStats(mediaType, rc);
+                    for (MediaType mediaType : MEDIA_TYPES)
+                    {
+                        for (RtpChannel rc : e.getChannels(mediaType))
+                            processChannelStats(mediaType, rc);
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -238,17 +245,21 @@ class RubyConferenceStatsHandler
                 return;
             }
 
+            System.out.println(">>>>>>> 1");
             if (channel.getReceiveSSRCs().length == 0)
                 return;
 
+            System.out.println(">>>>>>> 2");
             MediaStream stream = channel.getStream();
             if (stream == null)
                 return;
 
+            System.out.println(">>>>>>> 3");
             MediaStreamStats2 stats = stream.getMediaStreamStats();
             if (stats == null)
                 return;
 
+            System.out.println(">>>>>>> 4");
             Endpoint endpoint = channel.getEndpoint();
             String endpointID = (endpoint == null) ? "" : endpoint.getID();
 
@@ -256,6 +267,7 @@ class RubyConferenceStatsHandler
             // Send stats for received streams.
             for (ReceiveTrackStats receiveStat : stats.getAllReceiveStats())
             {
+                System.out.println(">>>>>>> in");
                 rubyStats.reportInbound(bridgeId, conferenceID, endpointID,
                         mediaType, stats, receiveStat);
             }
@@ -263,6 +275,7 @@ class RubyConferenceStatsHandler
             // Send stats for sent streams.
             for (SendTrackStats sendStat : stats.getAllSendStats())
             {
+                System.out.println(">>>>>>> out");
                 rubyStats.reportOutbound(bridgeId, conferenceID, endpointID,
                         mediaType, stats, sendStat);
             }
