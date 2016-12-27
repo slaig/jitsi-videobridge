@@ -199,7 +199,8 @@ class RubyConferenceStatsHandler
         {
             super(conference, period);
 
-            this.conferenceID = conference.getName();
+            String name = conference.getName();
+            this.conferenceID = (name != null) ? name : conference.getID();
             this.userInfo = new UserInfo(conferenceID, bridgeId, "ruby");
         }
 
