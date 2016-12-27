@@ -10,6 +10,8 @@ import org.jitsi.service.neomedia.stats.ReceiveTrackStats;
 import org.jitsi.service.neomedia.stats.SendTrackStats;
 import org.jitsi.service.neomedia.stats.TrackStats;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Store statistics to influx
  */
@@ -67,11 +69,13 @@ public class RubyStats extends AbstractLoggingHandler {
             Point point = ptBuilder.build();
             writePoint(point);
         } catch (Throwable e) {
+            System.out.println("> error");
             e.printStackTrace();
         }
 
         System.out.println(">>>>>>>>>> write vvv");
         Point.Builder ptBuilder2 = Point.measurement("vvv");
+        ptBuilder2.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         ptBuilder2.tag("aa", "bb");
         ptBuilder2.field("m", 12);
         writePoint(ptBuilder2.build());
